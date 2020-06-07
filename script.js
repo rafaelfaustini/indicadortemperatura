@@ -1,24 +1,20 @@
 var h = 10
-var apikey = 'aa1220301e053325a145f304dd01622f';
-var url = `https://samples.openweathermap.org/data/2.5/weather?q=London,uk&appid=${apikey}`;
-var dados = [];
+var apikey = '';
+var url = `https://cors-anywhere.herokuapp.com/https://api.openweathermap.org/data/2.5/weather?q=Riad,SA&units=metric&appid=${apikey}`;
 
-function preload() {
-   axios
+var temperatura = 0;
+function mapearTemperatura(t){
+    return map(t, -20, 100, 0, windowHeight/2, true);
+}
+async function preload() {
+   const dados = await axios
     .get(url, {
         headers: {
           'Access-Control-Allow-Origin': '*',
         }
         })
-    .then(response => {
-      dados = response
-    })
-    .catch(error => {
-      console.log(error)
-      this.errored = true
-    })
-
-   // loadJSON(url, getDado, 'jsonp')
+    temperatura = dados.data.main.temp;
+    h = mapearTemperatura(temperatura);
   }
 function getDado(data){
     console.log(data);
@@ -26,12 +22,27 @@ function getDado(data){
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
-    console.log(dados)
-    background(0);
+    background(255,255,255);
     noStroke();
     fill(102);
   }
   
   function draw() {
-    rect((width/2)-27.5, height/2, 55, h);
+    clear(); 
+    rect((width/2)-27.5, (height/2)-(h/2), 55, h);
+    textSize(32);
+    textAlign(CENTER)
+
+    let x = (width/2)
+    let y = (height/2)+(h/2)+30
+
+    if(temperatura < 0){
+        y = (height/2)-(h/2)-5
+    }
+    text(`${str(temperatura)}°C`, x, y);
+    if(temperatura >= 0){
+        fill(0, 102, 153);
+    } else{
+        fill(150, 0, 0); 
+    }
   }
